@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static i18n crispy_forms_tags %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            <select id="sel_course" class="form-select" aria-label="select course">
+                <option>== Select the course ==</option>
+                {% for c in user.courses.all %}
+                {% if course == c %}
+                <option value="{{c.id}}" selected>{{c}}</option>
+                {% else %}
+                <option value="{{c.id}}">{{c}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div id="tree"></div>
+    </div>
+    <div class="col-md-9">
+        {%block right_content %} {% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block ready_js %}
+$('#sel_course').change(function() {
+var url = "{% url 'course:course_detail' 1234 %}".replace(/1234/, $('#sel_course').val().toString());
+window.location = url;
+
+});
+{% endblock %}

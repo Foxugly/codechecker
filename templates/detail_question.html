@@ -1,0 +1,199 @@
+{% extends "detail_course.html" %}
+{% load static i18n crispy_forms_tags %}
+
+
+{% block right_content %}
+<div class="row">
+    <h2 class="text-center my-3">{{answer.refer_question.name}}</h2>
+</div>
+<div class="row">
+    <div class="my-3" style="border:solid 1px;">{{answer.refer_question.question}}</div>
+</div>
+<div class="row">
+    <div>
+        <ul id="tabs" class="nav nav-tabs">
+            {% for code in answer.code.all %}
+            <li class="nav-item">
+                {% if forloop.first %}
+                <a data-id="{{code.id}}" class="nav-link tab active" aria-current="page" href="#">{{code}}</a>
+                {% else %}
+                <a data-id="{{code.id}}" class="nav-link tab" aria-current="page" href="#">{{code}}</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+            {% if answer.refer_question.can_add_files %}
+            <li id="tab_add" class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#add_file">+</a>
+            </li>
+            {% endif %}
+        </ul>
+        <textarea id="code">{{answer.get_code_content}}</textarea>
+    </div>
+</div>
+<div class="d-flex clearfix mt-3">
+    <div class="align-self-start mr-auto">
+        <button id="btn_save" class="btn btn-success">Save</button>
+        <button id="btn_run" class="btn btn-info">Execute</button>
+    </div>
+    <div class="align-self-center mx-auto">
+    </div>
+    <div class="align-self-end ml-auto">
+        <button id="btn_reload" class="btn btn-secondary ml-auto">Reload default code</button>
+    </div>
+</div>
+
+<div id="add_file" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add file</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="form_add_document" class="form-row d-flex justify-content-center align-items-start mb-3">
+                    <div class="col-md-7">{{documentForm.name}}
+                        <div id="validation_id_name" class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-1 text-center">.</div>
+                    <div class="col-md-4">{{documentForm.extension}}
+                        <div id="validation_id_extension" class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="btn_add_file" type="button" class="btn btn-primary">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block ready_js2 %}
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: {name: "python", // TODO multimode use {{mode}}
+            version: 3,
+            singleLineStringErrors: false},
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true
+        });
+        editor.save();
+        editor.on("change",function(){console.log("change");});
+
+        $( "#btn_save" ).click(function() {
+            var url = "{% url 'answer:answer_set_content' 1234 %}";
+            url = url.replace(/1234/, $('ul[id="tabs"].active').data('id').toString());
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: { code: editor.getValue() },
+                traditional: true,
+                dataType: 'json',
+                success: function(result){
+                    $("#toast_save .toast-body").html("Saved");
+                    $("#toast_save").toast({ delay: 3000 });
+                    $("#toast_save").toast('show');
+                },
+                error: function(){
+                    $("#toast_error").toast({ delay: 3000 });
+                    $("#toast_error").toast('show');
+                }
+            });
+        });
+
+        $( "#btn_reload" ).click(function() {
+            var url = "{% url 'answer:answer_get_default_content' 1234 %}";
+            url = url.replace(/1234/, $('ul[id="tabs"] .active').data('id').toString());
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {answer_id:{{answer.id}}},
+                traditional: true,
+                dataType: 'json',
+                success: function(result){
+                    editor.setValue(result['code']);
+                },
+                error: function(){
+                    $("#toast_error").toast({ delay: 3000 });
+                    $("#toast_error").toast('show');
+                }
+            });
+        });
+
+        function click_tab(e){
+            $(this).tab('show');
+            var url = "{% url 'answer:answer_get_content' 1234 %}";
+            url = url.replace(/1234/, $(this).data('id').toString());
+            $.ajax({
+                url: url,
+                type: 'GET',
+                traditional: true,
+                dataType: 'json',
+                success: function(result){
+                    if (result['result']) {
+                        editor.setValue(result['code']);
+                        if (result['has_default'] == true){
+                            $('#btn_reload').show();
+                        }
+                        else{
+                            $('#btn_reload').hide();
+                        }
+                        editor.setOption("mode", result['mode']);
+                    }
+                },
+                error: function(){
+                    $("#toast_error").toast({ delay: 3000 });
+                    $("#toast_error").toast('show');
+                }
+            });
+        };
+
+        $("#tabs .tab").click(click_tab);
+
+        function run_execute(e) {
+            console.log("run exec");
+            console.log(e.target);
+        };
+
+        $("#btn_run").click(run_execute);
+        $("#btn_add_file").click(function(e){
+            e.preventDefault();
+            var url = "{% url 'answer:answer_add_file' answer.id %}";
+            $.ajax({
+                url: url,
+                type: 'GET',
+                traditional: true,
+                data: {'filename': $('#id_name').val(), 'extension':$('#id_extension').val()},
+                dataType: 'json',
+                success: function(result){
+                    if (result['result']) {
+                        var data = '<li class="nav-item"><a data-id="'+result['filename_id']+'" class="nav-link tab" aria-current="page" href="#">'+result['filename']+'</a></li>';
+                        $(data).insertBefore($('#tab_add'));
+                        $("#id_name").removeClass("is-invalid");
+                        $('#id_name').val('');
+                        $('#id_extension').val('');
+                        $('#validation_id_name').val('');
+                        $("#id_extension").removeClass("is-invalid");
+                        $('#validation_id_extension').val("");
+                        $('#add_file').modal('hide');
+                        $('#tabs li:eq(-2) > a').click(click_tab);
+                        $('#tabs li:eq(-2) > a').click();
+                    }
+                    else{
+                        if (result['filename_error']) {
+                            $("#id_name").addClass("is-invalid");
+                            $('#validation_id_name').text("Filename already exists");
+                        }
+                        if (result['extension_error']) {
+                            $("#id_extension").addClass("is-invalid");
+                            $('#validation_id_extension').text("select an extension");
+                        }
+                    }
+                },
+                error: function(){
+                    $("#toast_error").toast({ delay: 3000 });
+                    $("#toast_error").toast('show');
+                }
+            });
+        });
+    {% endblock %}

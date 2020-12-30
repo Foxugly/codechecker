@@ -1,0 +1,21 @@
+from inspect import signature, getfullargspec
+
+def myfunct(arg1, arg2, kwarg=None):
+    return True
+
+sig = signature(myfunct)
+print(sig)
+
+<Signature (arg1, arg2, kwarg=None)>
+print(sig.parameters)
+mappingproxy(OrderedDict([('arg1', <Parameter "arg1">), ('arg2', <Parameter "arg2">), ('kwarg', <Parameter "kwarg=None">)]))
+
+args = getfullargspec(myfunct)
+print(args)
+FullArgSpec(args=['arg1', 'arg2', 'kwarg'], varargs=None, varkw=None, defaults=(None,), kwonlyargs=[], kwonlydefaults=None, annotations={})
+
+
+
+$('#areaName').change(function () {
+            alert($('#areaName').val());
+        });

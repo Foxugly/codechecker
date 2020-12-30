@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+{% load static i18n crispy_forms_tags %}
+
+
+{% block ready_js %}
+$('#tree').treeview({
+data: {{treeview}},
+expandIcon: 'fas fa-plus',
+collapseIcon: 'fas fa-minus',
+selectable: true,
+showBorder: false,
+state: {
+checked: true,
+disabled: true,
+expanded: true,
+selected: true
+},
+onNodeSelected: function(event, node) {
+window.location = node.href;
+}
+});
+{% block ready_js2 %}{% endblock %}
+{% endblock %}
