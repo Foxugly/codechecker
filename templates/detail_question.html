@@ -27,7 +27,7 @@
             </li>
             {% endif %}
         </ul>
-        <textarea id="code">{{answer.get_code_content}}</textarea>
+        <textarea id="code" data-status="unchanged">{{answer.get_code_content}}</textarea>
     </div>
 </div>
 <div class="d-flex clearfix mt-3">
@@ -78,11 +78,24 @@
             matchBrackets: true
         });
         editor.save();
-        editor.on("change",function(){console.log("change");});
 
-        $( "#btn_save" ).click(function() {
+        function check_status(e){
+            if ($('#code').data('status') == "unchanged"){
+                $('#tabs a.nav-link.tab.active').addClass("text-danger");
+                $('#code').data('status', "changed");
+            }
+            if ($('#code').data('status') == "new_content"){
+                $('#code').data('status', "unchanged");
+            }
+
+
+        }
+
+        editor.on("change",check_status);
+
+        function save_file(e){
             var url = "{% url 'answer:answer_set_content' 1234 %}";
-            url = url.replace(/1234/, $('ul[id="tabs"].active').data('id').toString());
+            url = url.replace(/1234/, $('#tabs a.nav-link.tab.active').data('id'));
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -93,17 +106,21 @@
                     $("#toast_save .toast-body").html("Saved");
                     $("#toast_save").toast({ delay: 3000 });
                     $("#toast_save").toast('show');
+                    $('#tabs a.nav-link.tab.text-danger').removeClass("text-danger");
+                    $('#code').data('status', "unchanged");
                 },
                 error: function(){
                     $("#toast_error").toast({ delay: 3000 });
                     $("#toast_error").toast('show');
                 }
             });
-        });
+        }
+
+        $( "#btn_save" ).click(save_file);
 
         $( "#btn_reload" ).click(function() {
             var url = "{% url 'answer:answer_get_default_content' 1234 %}";
-            url = url.replace(/1234/, $('ul[id="tabs"] .active').data('id').toString());
+            url = url.replace(/1234/, $('ul[id="tabs"] .active').data('id'));
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -121,6 +138,9 @@
         });
 
         function click_tab(e){
+            if ($('#code').data('status') == "changed"){
+                save_file(e);
+            }
             $(this).tab('show');
             var url = "{% url 'answer:answer_get_content' 1234 %}";
             url = url.replace(/1234/, $(this).data('id').toString());
@@ -131,6 +151,7 @@
                 dataType: 'json',
                 success: function(result){
                     if (result['result']) {
+                        $('#code').data('status', "new_content");
                         editor.setValue(result['code']);
                         if (result['has_default'] == true){
                             $('#btn_reload').show();
