@@ -9,6 +9,7 @@ from tools.generic_class import GenericClass
 class Extension(GenericClass):
     name = models.CharField(_("name"), max_length=16)
     mode = models.CharField(_("mode"), max_length=16)
+    default_comment = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name

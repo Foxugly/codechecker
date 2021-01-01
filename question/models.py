@@ -45,7 +45,7 @@ class Question(GenericClass):
             default = "code.{}".format(ext.name)
             path_question = os.path.join(self.get_relative_path(), default)
             with open(path_question, "w") as f:
-                f.write("# type your code here")  # TODO lang.default_comment (to add)
+                f.write(ext.default_comment)
                 doc = Document(name=default, path=path_question, extension=ext)
                 doc.save()
             self.default_code.add(doc)

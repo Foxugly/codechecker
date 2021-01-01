@@ -74,17 +74,14 @@ class User(AbstractBaseUser):
     def add_course(self, course):
         if course not in self.courses.all():
             self.courses.add(course)
-        #path_course = os.path.join(self.get_relative_path(), course.slug)
         path_course = course.get_user_relative_path(self)
         if not os.path.isdir(path_course):
             os.mkdir(path_course, settings.RIGHTS_DIR)
         for chapter in course.chapters.all():
-            #path_chapter = os.path.join(path_course, course.slug)
             path_chapter = chapter.get_user_relative_path(self)
             if not os.path.isdir(path_chapter):
                 os.mkdir(path_chapter, settings.RIGHTS_DIR)
             for question in chapter.questions.all():
-                #path_question = os.path.join(path_chapter, question.slug)
                 path_question = question.get_user_relative_path(self)
                 if not os.path.isdir(path_question):
                     os.mkdir(path_question, settings.RIGHTS_DIR)
