@@ -48,7 +48,8 @@ for txt in ["Examen Janvier 2021", "Examen Juin 2021", "Examen aout 2021", ]:
     for txt2 in ["Question 1", "Question 2", "Question 3"]:
         print(txt2)
         try:
-            q = Question.objects.get(name="{}-{}".format(txt, txt2), refer_chapter=chapter)
+            can
+            q = Question.objects.get(name="{}-{}".format(txt, txt2), refer_chapter=chapter, can_add_files=True if "3" in txt2 else False)
         except Question.DoesNotExist:
             q = Question(name="{}-{}".format(txt, txt2), question="{}-{}:{}".format(txt, txt2, question_latex),
                          refer_chapter=chapter)
