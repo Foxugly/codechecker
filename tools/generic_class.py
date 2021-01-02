@@ -34,13 +34,13 @@ class GenericClass(models.Model):
     def get_model_name(self):
         return self._meta.model_name
 
-    def get_absolute_url(self):
+    def get_change_url(self):
         return reverse(self.change_url, kwargs={'pk': self.pk})
 
     def get_add_url(self):
         return reverse(self.add_url)
 
-    def get_detail_url(self):
+    def get_absolute_url(self):
         return reverse(self.detail_url, kwargs={'pk': self.pk})
 
     def get_delete_url(self):

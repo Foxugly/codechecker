@@ -42,7 +42,7 @@ class Chapter(GenericClass):
         super(GenericClass, self).save(*args, **kwargs)
 
     def get_json(self):
-        out = dict(text=self.name, href=self.get_detail_url())
+        out = dict(text=self.name, href=self.get_absolute_url())
         if len(self.questions.all()):
             out['nodes'] = [q.get_json() for q in self.questions.all()]
         return out

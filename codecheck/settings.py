@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fontawesome-free',
     'crispy_forms',
+    'tinymce',
     'users',
     'year',
     'language',
@@ -136,3 +137,20 @@ if STATE == 'PROD':
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 else:
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+
+
+TINYMCE_DEFAULT_CONFIG = {
+    "menubar": "",
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code "
+    "fullscreen insertdatetime media table paste code help wordcount spellchecker",
+    "toolbar": "undo redo | code | bold italic underline strikethrough | formatselect fontsizeselect fontselect | alignleft "
+    "aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor "
+    "backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
+    "fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | "
+    "a11ycheck ltr rtl | showcomments addcomment",
+    "custom_undo_redo_levels": 10,
+}
+
+TINYMCE_SPELLCHECKER = True
+TINYMCE_COMPRESSOR = False
+TINYMCE_FILEBROWSER = False

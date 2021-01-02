@@ -23,7 +23,7 @@ class QuestionUpdateView(LoginRequiredMixin, GenericUpdateView):
     model = Question
     fields = None
     form_class = QuestionForm
-    template_name = 'update.html'
+    template_name = 'update_question.html'
 
 
 class QuestionDetailView(LoginRequiredMixin, GenericDetailView):

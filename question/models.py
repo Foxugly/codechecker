@@ -9,6 +9,7 @@ from answer.models import Answer
 from document.models import Document
 from language.models import Language
 from tools.generic_class import GenericClass
+from tinymce.models import HTMLField
 
 
 # Create your models here.
@@ -16,8 +17,8 @@ class Question(GenericClass):
     refer_chapter = models.ForeignKey("chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
     slug = models.SlugField()
     name = models.CharField(_("Title"), max_length=255)
-    question = models.TextField(_("Question"), default="")
-    documents = models.ManyToManyField(Document, blank=True, verbose_name=_("documents"), related_name='documents')
+    question = HTMLField(_("Question"), default="")
+    documents = models.ManyToManyField(Document, blank=True, verbose_name=_("documents"), related_name='documents',)
     default_code = models.ManyToManyField(Document, blank=True, verbose_name=_("default_code"),
                                           related_name='default_code')
     answers = models.ManyToManyField(Answer, blank=True, verbose_name=_("answers"))
@@ -63,4 +64,4 @@ class Question(GenericClass):
         return os.path.join(self.refer_chapter.get_user_relative_path(user), self.slug)
 
     def get_json(self):
-        return dict(text=self.name, href=self.get_detail_url())
+        return dict(text=self.name, href=self.get_absolute_url())
