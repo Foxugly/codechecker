@@ -7,7 +7,6 @@ from answer.models import Answer
 from question.models import Question
 from language.models import Language
 from tinymce.widgets import TinyMCE
-from .widget import ListM2MField
 
 
 class QuestionForm(ModelForm):
