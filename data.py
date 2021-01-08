@@ -10,7 +10,11 @@ print("Create Extension")
 try:
     ext = Extension.objects.get(name="py")
 except Extension.DoesNotExist:
-    ext = Extension(name="py", mode="python", default_comment="# type your code here")
+    default_code = """
+if __name__ == "__main__":
+    print("Hello world")
+"""
+    ext = Extension(name="py", mode="python", default_comment=default_code)
 ext.save()
 print("Create Language")
 try:
