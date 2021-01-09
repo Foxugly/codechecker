@@ -17,14 +17,14 @@ class QuestionForm(ModelForm):
         self.fields['languages'].widget.attrs['class'] = 'select2'
         if self.instance:
             self.fields['answers'].widget = forms.CheckboxSelectMultiple(attrs={'class':"striped-list"})
-            self.fields['answers'].queryset = self.instance.answers.all() if self.instance else []
+            self.fields['answers'].queryset = self.instance.answers.all()
 
 
             self.fields['default_code'].widget = forms.CheckboxSelectMultiple(attrs={'class':"striped-list"})
-            self.fields['default_code'].queryset = self.instance.default_code.all()if self.instance else []
+            self.fields['default_code'].queryset = self.instance.default_code.all()
 
             self.fields['documents'].widget = forms.CheckboxSelectMultiple(attrs={'class':"striped-list"})
-            self.fields['documents'].queryset = self.instance.documents.all()if self.instance else []
+            self.fields['documents'].queryset = self.instance.documents.all()
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
