@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 
 from django.http import HttpResponse
 
@@ -31,7 +32,7 @@ def set_content(request, document_id):
         results = {}
         try:
             f = open(d.path, 'w')
-            f.write(request.GET['code'])
+            f.write(request.POST['code'])
             f.close()
             results['result'] = True
         except IOError as e:
@@ -89,10 +90,13 @@ def add_file(request, answer_id):
                 results['result'] = False
             else:
                 try:
-                    path_filename = os.path.join(a.get_relative_path(request.user), filename)
+                    path_filename = os.path.join(
+                        a.get_relative_path(request.user), filename)
                     with open(path_filename, "w+") as f:
-                        f.write("# type your code here")  # TODO lang.default_comment (to add)
-                        doc = Document(name=filename, path=path_filename, extension=ext, has_default=False)
+                        # TODO lang.default_comment (to add)
+                        f.write("# type your code here")
+                        doc = Document(
+                            name=filename, path=path_filename, extension=ext, has_default=False)
                         doc.save()
                     a.code.add(doc)
                     results['filename'] = filename
@@ -103,3 +107,15 @@ def add_file(request, answer_id):
         else:
             results['result'] = False
         return HttpResponse(json.dumps(results))
+
+
+def execute_anwser(request, answer_id):
+    if request.is_ajax():
+        anwser = Answer.objects.get(id=answer_id)
+        output = subprocess.check_output(["python3", os.path.join(anwser.path, "code.py")])
+        res = {
+            "command": "python3 code.py",
+            "output": output.decode("utf-8")
+        }
+        return HttpResponse(json.dumps(res))
+

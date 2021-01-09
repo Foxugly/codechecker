@@ -33,12 +33,27 @@
 <div class="d-flex clearfix mt-3">
     <div class="align-self-start mr-auto">
         <button id="btn_save" class="btn btn-success">Save</button>
-        <button id="btn_run" class="btn btn-info">Execute</button>
+        <button id="btn_run" class="btn btn-outline-dark" style="">
+            Run
+            <i class="fa fa-play" style="color: green"></i>
+        </button>
     </div>
     <div class="align-self-center mx-auto">
     </div>
     <div class="align-self-end ml-auto">
         <button id="btn_reload" class="btn btn-secondary ml-auto">Reload default code</button>
+    </div>
+</div>
+
+<div class="mt-3">
+    <div class="terminal" id="terminal">
+        <div id="terminal_history">
+            
+        </div>
+        <div class="line">
+            <span id="path">{{user.netid}}@codechecker:~$</span>
+            <input type="text" id="terminal_input">
+        </div>
     </div>
 </div>
 
@@ -87,18 +102,18 @@
             if ($('#code').data('status') == "new_content"){
                 $('#code').data('status', "unchanged");
             }
-
-
         }
 
-        editor.on("change",check_status);
+        editor.on("change", check_status);
 
         function save_file(e){
             var url = "{% url 'answer:answer_set_content' 1234 %}";
             url = url.replace(/1234/, $('#tabs a.nav-link.tab.active').data('id'));
             $.ajax({
                 url: url,
-                type: 'GET',
+                // Include the token in the request, getCookie is defined in static/scripts/utils.js
+                headers: { "X-CSRFToken": getCookie("csrftoken") }, 
+                type: 'POST',
                 data: { code: editor.getValue() },
                 traditional: true,
                 dataType: 'json',
@@ -172,9 +187,41 @@
         $("#tabs .tab").click(click_tab);
 
         function run_execute(e) {
-            console.log("run exec");
-            console.log(e.target);
+            var url = "{% url 'answer:answer_execute' answer.id %}";
+            $.getJSON({
+                url: url,
+                success: function(data) {
+                    var lines = ["{{user.netid}}@codechecker:~$ " + data.command].concat(data.output);
+                    terminal_log(lines);
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
         };
+
+        function terminal_log(lines) {
+            lines.forEach(function(line){
+                $('#terminal_history').append(line + "<br/>");
+            });
+            var terminal = $("#terminal")[0];
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        $('#terminal').on('click', function(){
+            $('#terminal_input').focus();
+        });
+
+        $('#terminal_input').on('keydown',function search(e) {
+            if(e.keyCode == 13) {
+                $('#terminal_history').append("{{user.netid}}@codechecker:~$ " + $(this).val()+'<br/>');
+                $('#terminal_input').val('');
+                // Scroll to the bottom of the terminal.
+                this.parentNode.parentNode.scrollTop = this.parentNode.parentNode.scrollHeight;
+            }
+        });
+
+        
 
         $("#btn_run").click(run_execute);
         $("#btn_add_file").click(function(e){
