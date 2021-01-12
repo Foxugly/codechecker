@@ -47,5 +47,5 @@
 {% endblock %}
 
 {% block ready_js %}
-$$("#btn_add_chapter").modalForm({formURL: "{% url 'chapter:chapter_popup_add' %}?course_id={{object.pk}}"});
+    $("#btn_add_chapter").modalForm({formURL: "{% url 'chapter:chapter_popup_add' %}?course_id={{object.pk}}"});
 {% endblock %}
