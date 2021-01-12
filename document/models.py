@@ -21,3 +21,6 @@ class Document(GenericClass):
 
     def save(self, *args, **kwargs):
         super(GenericClass, self).save(*args, **kwargs)
+
+    def get_download_url(self):
+        return self.get_absolute_url()  # TODO

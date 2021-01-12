@@ -1,17 +1,18 @@
-{% extends "detail_course.html" %}
+{% extends "index.html" %}
 {% load static i18n crispy_forms_tags %}
 
 
 {% block right_content %}
+
 <div class="row">
-    <h2 class="text-center my-3">{{answer.refer_question.name}}</h2>
+    <h2 class="text-center my-3 col-12">{{answer.refer_question.name}}</h2>
 </div>
 <div class="row">
-    <div class="my-3" style="border:solid 1px;">{{answer.refer_question.question | safe}}</div>
+    <div class="my-3 col-12" style="border:solid 1px;">{{answer.refer_question.question | safe}}</div>
 </div>
 <div class="row">
-    <div>
-        <ul id="tabs" class="nav nav-tabs">
+    <div class="col-12">
+        <ul id="tabs" class="nav nav-tabs ">
             {% for code in answer.code.all %}
             <li class="nav-item">
                 {% if forloop.first %}
@@ -48,7 +49,7 @@
 <div class="mt-3">
     <div class="terminal" id="terminal">
         <div id="terminal_history">
-            
+
         </div>
         <div class="line">
             <span id="path">{{user.netid}}@codechecker:~$</span>
@@ -81,9 +82,31 @@
             </div>
         </div>
     </div>
+</div>
     {% endblock %}
 
-    {% block ready_js2 %}
+    {% block ready_js %}
+
+        $('#tree').treeview({
+        data: {{treeview}},
+        expandIcon: 'fas fa-plus',
+        collapseIcon: 'fas fa-minus',
+        selectable: true,
+        showBorder: false,
+        state: {
+        checked: true,
+        disabled: true,
+        expanded: true,
+        selected: true
+        },
+        onNodeSelected: function(event, node) {
+        window.location = node.href;
+        }
+        });
+
+
+
+
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
             mode: {name: "python", // TODO multimode use {{mode}}
             version: 3,
@@ -93,6 +116,9 @@
             matchBrackets: true
         });
         editor.save();
+
+        $("#btn_add_documents").modalForm({ formURL: "{% url 'document:document_popup_add' %}" });
+        $("#btn_add_default_code").modalForm({ formURL: "{% url 'document:document_popup_add' %}" });
 
         function check_status(e){
             if ($('#code').data('status') == "unchanged"){

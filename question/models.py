@@ -23,7 +23,8 @@ class Question(GenericClass):
                                           related_name='default_code')
     answers = models.ManyToManyField(Answer, blank=True, verbose_name=_("answers"))
     languages = models.ManyToManyField(Language, blank=True)
-    can_add_files = models.BooleanField(default=False)
+    can_add_documents = models.BooleanField(default=False)
+    can_add_code = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -38,6 +39,9 @@ class Question(GenericClass):
         if not os.path.isdir(self.get_relative_path()):
             os.mkdir(self.get_relative_path(), settings.RIGHTS_DIR)
         super(GenericClass, self).save(*args, **kwargs)
+        if self.refer_chapter:
+            if self not in self.refer_chapter.questions.all():
+                self.refer_chapter.questions.add(self)
 
     def init_default_code(self):
         if not self.default_code.exists() and self.languages.exists():

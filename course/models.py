@@ -5,15 +5,15 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext as _
-
 from tools.generic_class import GenericClass
+from django.urls import reverse
 
 
 # Create your models here.
 class Course(GenericClass):
     name = models.CharField(max_length=255, db_index=True)
     year = models.ForeignKey("year.Year", blank=True, on_delete=models.CASCADE)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     chapters = models.ManyToManyField("chapter.Chapter", blank=True, verbose_name=_("Chapters"))
     description = models.TextField(default="", blank=True, verbose_name=_("Description"))
 
@@ -42,6 +42,8 @@ class Course(GenericClass):
     def get_absolute_path(self):
         return os.path.abspath(self.get_relative_path())
 
+    def get_absolute_url(self):
+        return reverse('course:course_slug_detail', kwargs={'slug': self.slug})
 
     def fullname(self):
         return "{} ({})".format(self.name, self.slug.lower())

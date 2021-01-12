@@ -2,16 +2,48 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from answer.models import Answer
 from document.forms import DocumentForm
-from question.forms import QuestionForm
+from question.forms import QuestionCreateForm, QuestionUpdateForm, QuestionPopupCreateForm
 from question.models import Question
 from tools.generic_views import *
+from chapter.models import Chapter
+from bootstrap_modal_forms.generic import BSModalCreateView
+from django.utils.translation import gettext as _
+from django.urls import reverse
+
+
+class QuestionPopupCreateView(LoginRequiredMixin, BSModalCreateView):
+    model = Question
+    form_class = QuestionPopupCreateForm
+    template_name = 'document_popup.html'
+    refer_course = None
+    success_url = None
+
+    def get_initial(self):
+        if self.request.GET.get('chapter_id'):
+            self.refer_chapter = self.request.GET.get('chapter_id')
+        return super().get_initial()
+
+    def form_valid(self, form):
+        if not self.request.is_ajax():
+            form.instance.refer_chapter = Chapter.objects.get(id=self.refer_chapter)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = _("Add Question")
+        return context
+
+    def get_success_url(self):
+        if not self.request.is_ajax():
+            return reverse('question:question_change', kwargs={'pk': self.object.id})
+        else:
+            return reverse('home')
 
 
 class QuestionCreateView(LoginRequiredMixin, GenericCreateView):
     model = Question
     fields = None
-    form_class = QuestionForm
-
+    form_class = QuestionCreateForm
 
 
 class QuestionListView(LoginRequiredMixin, GenericListView):
@@ -22,8 +54,11 @@ class QuestionListView(LoginRequiredMixin, GenericListView):
 class QuestionUpdateView(LoginRequiredMixin, GenericUpdateView):
     model = Question
     fields = None
-    form_class = QuestionForm
+    form_class = QuestionUpdateForm
     template_name = 'update_question.html'
+
+    def get_success_url(self):
+        return reverse('chapter:chapter_detail', kwargs={'pk': self.object.refer_chapter.id})
 
 
 class QuestionDetailView(LoginRequiredMixin, GenericDetailView):

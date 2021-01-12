@@ -21,7 +21,7 @@ class CourseUpdateView(LoginRequiredMixin, GenericUpdateView):
     model = Course
     fields = None
     form_class = CourseForm
-    template_name = 'index.html'
+    template_name = 'base.html'
 
 
 class CourseDetailView(LoginRequiredMixin, GenericDetailView):

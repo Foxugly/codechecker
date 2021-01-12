@@ -10,9 +10,9 @@ from tools.generic_class import GenericClass
 
 # Create your models here.
 class Chapter(GenericClass):
-    refer_course = models.ForeignKey("course.Course", blank=True, verbose_name=_("course"), on_delete=models.CASCADE)
+    refer_course = models.ForeignKey("course.Course", verbose_name=_("course"), on_delete=models.CASCADE)
     name = models.CharField(_("Title"), max_length=255)
-    slug = models.SlugField(unique=True, blank=True, db_index=True)
+    slug = models.SlugField(unique=True)
     questions = models.ManyToManyField("question.Question", blank=True, verbose_name=_("questions"))
 
     def __str__(self):
@@ -36,10 +36,13 @@ class Chapter(GenericClass):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = slugify("{0}_{1}".format(self.refer_course, self.name))
         if not os.path.isdir(self.get_relative_path()):
             os.mkdir(self.get_relative_path(), settings.RIGHTS_DIR)
         super(GenericClass, self).save(*args, **kwargs)
+        if self.refer_course:
+            if self not in self.refer_course.chapters.all():
+                self.refer_course.chapters.add(self)
 
     def get_json(self):
         out = dict(text=self.name, href=self.get_absolute_url())

@@ -1,0 +1,36 @@
+{% load static i18n crispy_forms_tags crispy_forms_field %}
+<form method="post" action="">
+    {% csrf_token %}
+
+    <div class="modal-header">
+        <h3 class="modal-title">{{title}}</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+            {% for error in form.non_field_errors %}
+            {{ error }}
+            {% endfor %}
+        </div>
+
+        {% for field in form %}
+        <div class="form-group row">
+
+            {{ field.label_tag }}
+            <div class="{{ field_class }}">{% crispy_field field %}{{ field.errors }}
+                {% if field.help_text %}
+                <p class="help">{{ field.help_text|safe }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="modal-footer">
+        <button id="btn_modal" type="button" class="submit-btn btn btn-primary">Create</button>
+    </div>
+</form>

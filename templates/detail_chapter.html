@@ -1,8 +1,10 @@
-{% extends "base.html" %}
+{% extends "index.html" %}
 {% load static i18n crispy_forms_tags %}
+
 
 {% block content %}
 <div class="container">
+
     <div class="row">
         <h2 class="text-center my-3">{{object.name}}</h2>
     </div>
@@ -19,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for inst in object.chapters.all %}
+                {% for inst in object.questions.all %}
                     <tr>
                         <td>{{inst}}</td>
                         <td class="py-1" style="width:1px; white-space:nowrap;">
@@ -41,11 +43,11 @@
         </table>
     </div>
     <div>
-        <button id="btn_add_chapter"  class="btn btn-secondary" >Add chapter</button>
+        <button  id="btn_add_question" class="btn btn-secondary" href="">Add question</button>
     </div>
 </div>
 {% endblock %}
 
 {% block ready_js %}
-$$("#btn_add_chapter").modalForm({formURL: "{% url 'chapter:chapter_popup_add' %}?course_id={{object.pk}}"});
+$("#btn_add_question").modalForm({formURL: "{% url 'question:question_popup_add' %}?chapter_id={{object.pk}}"});
 {% endblock %}

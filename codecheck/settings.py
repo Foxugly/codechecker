@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     'fontawesome-free',
     'crispy_forms',
+    'bootstrap_modal_forms',
     'tinymce',
     'users',
     'year',
@@ -63,7 +65,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'codecheck.urls'
-
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

@@ -5,6 +5,7 @@ from language.models import Language, Extension
 from question.models import Question
 from users.models import User
 from year.models import Year
+import os
 
 print("Create Extension")
 try:
@@ -52,7 +53,7 @@ for txt in ["Examen Janvier 2021", "Examen Juin 2021", "Examen aout 2021", ]:
     for txt2 in ["Question 1", "Question 2", "Question 3"]:
         print(txt2)
         try:
-            q = Question.objects.get(name="{}-{}".format(txt, txt2), refer_chapter=chapter, can_add_files=True if "3" in txt2 else False)
+            q = Question.objects.get(name="{}-{}".format(txt, txt2), refer_chapter=chapter, can_add_documents=True if "3" in txt2 else False, can_add_code=True if "3" in txt2 else False)
         except Question.DoesNotExist:
             q = Question(name="{}-{}".format(txt, txt2), question="{}-{}:{}".format(txt, txt2, question_latex),
                          refer_chapter=chapter)
