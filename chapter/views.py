@@ -11,7 +11,7 @@ from course.models import Course
 class ChapterPopupCreateView(LoginRequiredMixin, BSModalCreateView):
     model = Chapter
     form_class = ChapterPopupCreateForm
-    template_name = 'document_popup.html'
+    template_name = 'form_popup.html'
     refer_course = None
     success_url = None
 
@@ -36,7 +36,6 @@ class ChapterPopupCreateView(LoginRequiredMixin, BSModalCreateView):
             return reverse('chapter:chapter_detail', kwargs={'pk': self.object.id})
         else:
             return reverse('home')
-
 
 
 class ChapterCreateView(LoginRequiredMixin, GenericCreateView):

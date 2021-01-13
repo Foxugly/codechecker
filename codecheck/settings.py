@@ -131,6 +131,7 @@ AUTH_USER_MODEL = "users.User"
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 COURSES_DIR = 'courses'
+UPLOAD_DIR = "upload"
 STUDENTS_DIR = 'students'
 RIGHTS_DIR = 0o777
 MEDIA_DIR = 'media'

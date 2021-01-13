@@ -117,8 +117,8 @@
         });
         editor.save();
 
-        $("#btn_add_documents").modalForm({ formURL: "{% url 'document:document_popup_add' %}" });
-        $("#btn_add_default_code").modalForm({ formURL: "{% url 'document:document_popup_add' %}" });
+        $("#btn_add_documents").modalForm({ formURL: "{% url 'question:document_popup_add' object.id %}?type=doc" });
+        $("#btn_add_default_code").modalForm({ formURL: "{% url 'question:document_popup_add' object.id %}?type=code" });
 
         function check_status(e){
             if ($('#code').data('status') == "unchanged"){

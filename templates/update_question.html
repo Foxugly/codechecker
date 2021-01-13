@@ -16,4 +16,8 @@
 </div>
 {% endblock %}
 
+{% block ready_js %}
+$("#btn_add_documents").modalForm({ formURL: "{% url 'question:document_popup_add' object.id  %}?type=doc" });
+$("#btn_add_default_code").modalForm({ formURL: "{% url 'question:document_popup_add' object.id  %}?type=code" });
+{% endblock %}
 

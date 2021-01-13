@@ -14,6 +14,9 @@ from tinymce.models import HTMLField
 
 # Create your models here.
 class Question(GenericClass):
+    doc_buttons = ['add', 'detail', 'download', 'delete']
+    code_buttons = ['add', 'detail', 'download', 'delete']
+    answers_buttons = ['detail', 'delete']
     refer_chapter = models.ForeignKey("chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
     slug = models.SlugField()
     name = models.CharField(_("Title"), max_length=255)

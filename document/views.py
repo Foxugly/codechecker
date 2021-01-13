@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from document.forms import DocumentForm, DocumentPopupCreateForm
 from document.models import Document
 from tools.generic_views import *
-from bootstrap_modal_forms.generic import BSModalCreateView
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalReadView
 from django.utils.translation import gettext as _
 
 
@@ -11,7 +11,7 @@ class DocumentPopupCreateView(LoginRequiredMixin, BSModalCreateView):
     model = Document
     fields = None
     form_class = DocumentPopupCreateForm
-    template_name = 'document_popup.html'
+    template_name = 'form_popup.html'
 
 
     def get_context_data(self, **kwargs):
@@ -46,3 +46,13 @@ class DocumentDetailView(LoginRequiredMixin, GenericDetailView):
 
 class DocumentDeleteView(LoginRequiredMixin, GenericDeleteView):
     model = Document
+
+
+class DocumentUploadView(LoginRequiredMixin, BSModalReadView):
+    model = Document
+    template_name = 'form_upload.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({'title': _("Add documents"), 'type': self.request.GET.get("type")})
+        return context

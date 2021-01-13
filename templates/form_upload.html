@@ -1,0 +1,41 @@
+{% load static i18n crispy_forms_tags crispy_forms_field %}
+
+    <div class="modal-header">
+        <h3 class="modal-title">{{title}}</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form id="dropzoneForm" action="{{action_url}}" class="dropzone">
+        {% csrf_token %}
+        <div class="fallback">
+            <input name=file type="file" multiple />
+        </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+
+<script>
+$("#dropzoneForm").dropzone({
+    maxFiles: 2000,
+    error: function (file, response) {
+        console.log("Error");
+        console.log(response);
+    },
+    success: function (file, response) {
+        console.log("Success");
+        console.log(response);
+        if (response['type'] == "doc"){
+            $("#table_id_documents tbody").append('<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>');
+        }
+        if (response['type'] == "code"){
+            $("#table_id_default_code tbody").append('<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>');
+        }
+
+    }
+});
+</script>

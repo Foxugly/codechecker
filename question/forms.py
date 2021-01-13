@@ -23,16 +23,16 @@ class QuestionUpdateForm(ModelForm):
     question = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 10}))
 
     def __init__(self, *args, **kwargs):
+        doc_btns, code_btns, answers_btns = kwargs.pop('doc_btns'), kwargs.pop('code_btns'), kwargs.pop('answers_btns')
         super().__init__(*args, **kwargs)
         self.fields['languages'].widget.attrs['class'] = 'select2'
         if self.instance:
-            choices, buttons = self.instance.answers.all(), ['detail', 'delete']
-            self.fields['answers'].widget = TableWidget(choices=choices, buttons=buttons)
-            choices, buttons = self.instance.documents.all(), ['add', 'detail', 'download', 'delete']
-            self.fields['documents'].widget = TableWidget(choices=choices, buttons=buttons)
-            choices, buttons = self.instance.default_code.all(), ['add', 'detail', 'download', 'delete']
-            self.fields['default_code'].widget = TableWidget(choices=choices, buttons=buttons)
-
+            self.fields['answers'].widget = TableWidget(choices=self.instance.answers.all(), buttons=answers_btns)
+            self.fields['documents'].widget = TableWidget(choices=self.instance.documents.all(), buttons=doc_btns)
+            self.fields['default_code'].widget = TableWidget(choices=self.instance.default_code.all(), buttons=code_btns)
+        else:
+            self.fields['documents'].widget = TableWidget(buttons=doc_btns)
+            self.fields['default_code'].widget = TableWidget(buttons=code_btns)
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
@@ -50,10 +50,11 @@ class QuestionCreateForm(ModelForm):
     question = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 10}))
 
     def __init__(self, *args, **kwargs):
+        doc_btns, code_btns = kwargs.pop('doc_btns'), kwargs.pop('code_btns')
         super().__init__(*args, **kwargs)
         self.fields['languages'].widget.attrs['class'] = 'select2'
-        self.fields['documents'].widget = TableWidget(buttons=['add', 'detail', 'download', 'delete'],)
-        self.fields['default_code'].widget = TableWidget(buttons=['add', 'detail', 'download', 'delete'],)
+        self.fields['documents'].widget = TableWidget(buttons=doc_btns)
+        self.fields['default_code'].widget = TableWidget(buttons=code_btns)
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
