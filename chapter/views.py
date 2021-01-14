@@ -11,7 +11,7 @@ from course.models import Course
 class ChapterPopupCreateView(LoginRequiredMixin, BSModalCreateView):
     model = Chapter
     form_class = ChapterPopupCreateForm
-    template_name = 'form_popup.html'
+    template_name = 'modal_form.html'
     refer_course = None
     success_url = None
 

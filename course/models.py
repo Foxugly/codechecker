@@ -23,7 +23,6 @@ class Course(GenericClass):
     def __str__(self):
         return self.name
 
-
     def get_relative_courses_path(self):
         return os.path.join(settings.MEDIA_DIR, settings.COURSES_DIR)
 

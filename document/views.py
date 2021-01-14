@@ -5,14 +5,14 @@ from document.models import Document
 from tools.generic_views import *
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalReadView
 from django.utils.translation import gettext as _
+#import inspect
 
 
 class DocumentPopupCreateView(LoginRequiredMixin, BSModalCreateView):
     model = Document
     fields = None
     form_class = DocumentPopupCreateForm
-    template_name = 'form_popup.html'
-
+    template_name = 'modal_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,9 +48,14 @@ class DocumentDeleteView(LoginRequiredMixin, GenericDeleteView):
     model = Document
 
 
+class DocumentPopupDeleteView(LoginRequiredMixin, BSModalReadView):
+    model = Document
+    template_name = 'modal_delete.html'
+
+
 class DocumentUploadView(LoginRequiredMixin, BSModalReadView):
     model = Document
-    template_name = 'form_upload.html'
+    template_name = 'modal_upload.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

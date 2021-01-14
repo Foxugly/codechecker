@@ -16,7 +16,7 @@ from tinymce.models import HTMLField
 class Question(GenericClass):
     doc_buttons = ['add', 'detail', 'download', 'delete']
     code_buttons = ['add', 'detail', 'download', 'delete']
-    answers_buttons = ['detail', 'delete']
+    answers_buttons = ['detail']
     refer_chapter = models.ForeignKey("chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
     slug = models.SlugField()
     name = models.CharField(_("Title"), max_length=255)
@@ -72,3 +72,12 @@ class Question(GenericClass):
 
     def get_json(self):
         return dict(text=self.name, href=self.get_absolute_url())
+
+    def get_data_docs(self):
+        return [(d.name, d.get_buttons(self.doc_buttons)) for d in self.documents.all()]
+
+    def get_data_codes(self):
+        return [(d.name, d.get_buttons(self.code_buttons)) for d in self.default_code.all()]
+
+    def get_data_answers(self):
+        return [(str(self), d.get_buttons(self.answers_buttons)) for d in self.answers.all()]

@@ -43,7 +43,7 @@ question_latex = "When \\(a \\ne 0\\), there are two solutions to \\(ax^2 + bx +
 for txt in ["Examen Janvier 2021", "Examen Juin 2021", "Examen aout 2021", ]:
     print(txt)
     try:
-        chapter = Chapter(name=txt, refer_course=c)
+        chapter = Chapter.objects.get(name=txt, refer_course=c)
     except Chapter.DoesNotExist:
         chapter = Chapter(name=txt, refer_course=c)
     chapter.save()

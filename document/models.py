@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.db import models
-import os
 from tools.generic_class import GenericClass
+from django.urls import reverse
+import inspect
 
 
-# Create your models here.
 class Document(GenericClass):
     name = models.CharField(max_length=255, db_index=True)
     description = models.TextField(default="", blank=True)
@@ -23,6 +23,24 @@ class Document(GenericClass):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-
     def get_download_url(self):
         return self.get_absolute_url()  # TODO
+
+    def get_delete_popup_url(self):
+        return reverse("document:document_popup_delete", kwargs={'pk': self.id})
+
+
+    def get_buttons(self, buttons):
+        out = ''
+        if "detail" in buttons:
+            out += '<a class="btn btn-sm btn-primary ml-1" href="{0}"><i class="far fa-eye"></i></a>'.format(
+                self.get_absolute_url())
+        if "change" in buttons:
+            out += '<a class="btn btn-sm btn-info ml-1" href="{0}"><i class="fas fa-edit"></i></a>'.format(
+                self.get_change_url())
+        if "download" in buttons:
+            out += '<a class="btn btn-sm btn-success ml-1" href="{0}"><i class="fas fa-download"></i></a>'.format(
+                self.get_download_url())
+        if "delete" in buttons:
+            out += '<button class="btn btn-sm btn-danger btn-delete ml-1" data-url="{0}"><i class="far fa-trash-alt"></i></button>'.format(self.get_delete_popup_url())
+        return out
