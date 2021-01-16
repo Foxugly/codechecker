@@ -1,15 +1,26 @@
 {% extends "base.html" %}
 {% load static i18n crispy_forms_tags %}
 
+{% block breadcrumbs %}
+<div class="row pl-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course:course_list' %}">Courses</a></li>
+            <li class="breadcrumb-item active"><a href="#">{{object.name}}</a></li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+
 {% block content %}
+
 <div class="container">
     <div class="row">
-        <h2 class="text-center my-3">{{object.name}}</h2>
+        <div class="col-12 text-center">
+            <h2 class="text-center">{{object.name}}</h2>
+        </div>
     </div>
-    <div class="row">
-        <p>{{object.refer_course}}</p>
-    </div>
-
     <div class="row">
         <table class="table table-striped">
             <thead>

@@ -19,6 +19,8 @@ class Course(GenericClass):
 
     class Meta:
         ordering = ['slug']
+        verbose_name = _("Course")
+        verbose_name_plural = _("Courses")
 
     def __str__(self):
         return self.name

@@ -15,7 +15,13 @@ class CourseCreateView(LoginRequiredMixin, GenericCreateView):
 
 class CourseListView(LoginRequiredMixin, GenericListView):
     model = Course
+    template_name = 'list_course.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context)
+        print(context["model"])
+        return context
 
 class CourseUpdateView(LoginRequiredMixin, GenericUpdateView):
     model = Course
