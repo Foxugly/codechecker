@@ -18,7 +18,6 @@
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
     </div>
-
 <script>
 $("#dropzoneForm").dropzone({
     maxFiles: 2000,
@@ -30,10 +29,15 @@ $("#dropzoneForm").dropzone({
         console.log("Success");
         console.log(response);
         if (response['type'] == "doc"){
-            $("#table_id_documents tbody").append('<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>');
+            var html = '<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>';
+            $("#table_documents tbody").append(html);
+            $("#table_documents tbody tr:last .confirmation").on('click', function(e){delete_object(this);});
+
         }
         if (response['type'] == "code"){
-            $("#table_id_default_code tbody").append('<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>');
+            var html = '<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>';
+            $("#table_codes tbody").append(html);
+            $("#table_codes tbody tr:last .confirmation").on('click', function(e){delete_object(this);});
         }
 
     }

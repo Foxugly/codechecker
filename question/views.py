@@ -9,7 +9,7 @@ from chapter.models import Chapter
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalReadView
 from django.utils.translation import gettext as _
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from document.models import Document
 from language.models import Extension
 from django.conf import settings
@@ -68,7 +68,7 @@ class QuestionUpdateView(LoginRequiredMixin, GenericUpdateView):
     template_name = 'update_question.html'
 
     def get_success_url(self):
-        return reverse('question:question_detail', kwargs={'pk': self.object.id})
+        return reverse('question:question_change', kwargs={'pk': self.object.id})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -95,7 +95,8 @@ class QuestionDetailView(LoginRequiredMixin, GenericDetailView):
         context['course'] = self.object.refer_chapter.refer_course
         answer = Answer.objects.get(refer_question=self.object, user=self.request.user)
         context["answer"] = answer
-        context['mode'] = answer.code.all()[0].extension.mode
+        if len(answer.code.all()):
+            context['mode'] = answer.code.all()[0].extension.mode
         context['documentForm'] = DocumentForm()
         return context
 

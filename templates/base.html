@@ -52,11 +52,50 @@
     <script src="http://jonmiles.github.io/bootstrap-treeview/js/bootstrap-treeview.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
-
+    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous"></script>
     <script>
+        function delete_object(e){
+            var url = $(e).data('url');
+            var name = "object";
+            var tr = $(e).closest("tr");
+            bootbox.confirm({
+                message: "{% trans "Do you really want to delete" %} <b>"+ $(e).data('name') + "</b> ?",
+                buttons: {
+                    confirm: {
+                        label: "{% trans "Yes" %}",
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: "{% trans "No" %}",
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: url,
+                            headers: { "X-CSRFToken": getCookie("csrftoken") },
+                            type: 'POST',
+                            traditional: true,
+                            dataType: 'json',
+                            success: function(result){
+                                tr.remove();
+                            },
+                            error: function(){
+                                $("#toast_error").toast({ delay: 3000 });
+                                $("#toast_error").toast('show');
+                            }
+                        });
+                    }
+                }
+            }); // end bootbox.confirm
+        }
+
         $(document).ready(function () {
             $('select').select2();
+            $('.confirmation').on('click', function(e){delete_object(this);});
+
             {% block ready_js %}
             {% endblock %}
         }); // end document

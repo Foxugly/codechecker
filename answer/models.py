@@ -24,9 +24,10 @@ class Answer(GenericClass):
 
     def get_code_content(self, indice=0):
         out = ""
-        if indice <= len(self.code.all()):
-            with open(self.code.all()[indice].path, "r") as f:
-                out = f.read()
+        if len(self.code.all()):
+            if indice <= len(self.code.all()) :
+                with open(self.code.all()[indice].path, "r") as f:
+                    out = f.read()
         return out
 
     class Meta:
@@ -36,11 +37,11 @@ class Answer(GenericClass):
     def get_buttons(self, buttons):
         out = ''
         if "detail" in buttons:
-            out += '<a class="btn btn-sm btn-primary ml-1" href="{0}"><i class="far fa-eye"></i></a>'.format(
+            out += '<a class="btn btn-sm btn-primary  ml-1" href="{0}"><i class="far fa-eye"></i></a>'.format(
                 self.get_absolute_url())
         if "change" in buttons:
             out += '<a class="btn btn-sm btn-info ml-1" href="{0}"><i class="fas fa-edit"></i></a>'.format(
                 self.get_change_url())
         if "delete" in buttons:
-            out += '<button class="btn btn-sm btn-danger btn-delete ml-1" data-url="{0}"><i class="far fa-trash-alt"></i></button>'.format(self.get_delete_popup_url())
+            out += '<button class="btn btn-sm btn-danger confirmation ml-1" data-url="{0}" data-name="{1}"><i class="far fa-trash-alt"></i></button>'.format(self.get_delete_popup_url(), str(self))
         return out

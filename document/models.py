@@ -27,8 +27,7 @@ class Document(GenericClass):
         return self.get_absolute_url()  # TODO
 
     def get_delete_popup_url(self):
-        return reverse("document:document_popup_delete", kwargs={'pk': self.id})
-
+        return reverse("document:document_ajax_delete", kwargs={'document_id': self.id})
 
     def get_buttons(self, buttons):
         out = ''
@@ -42,5 +41,5 @@ class Document(GenericClass):
             out += '<a class="btn btn-sm btn-success ml-1" href="{0}"><i class="fas fa-download"></i></a>'.format(
                 self.get_download_url())
         if "delete" in buttons:
-            out += '<button class="btn btn-sm btn-danger btn-delete ml-1" data-url="{0}"><i class="far fa-trash-alt"></i></button>'.format(self.get_delete_popup_url())
+            out += '<a class="btn btn-sm btn-danger confirmation ml-1" data-url="{0}" href="#" data-name="{1}"><i class="far fa-trash-alt"></i></a>'.format(self.get_delete_popup_url(), self.name)
         return out
