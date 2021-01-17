@@ -56,10 +56,10 @@
     <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous"></script>
     <script>
-        function delete_object(e){
+
+        function delete_document(e){
             var url = $(e).data('url');
             var name = "object";
-            var tr = $(e).closest("tr");
             bootbox.confirm({
                 message: "{% trans "Do you really want to delete" %} <b>"+ $(e).data('name') + "</b> ?",
                 buttons: {
@@ -81,7 +81,12 @@
                             traditional: true,
                             dataType: 'json',
                             success: function(result){
-                                tr.remove();
+                                if ($(e).data('source') == "table"){
+                                    $(e).closest("tr").remove();
+                                }
+                                if ($(e).data('source') == "span"){
+                                    $(e).closest("span").remove();
+                                }
                             },
                             error: function(){
                                 $("#toast_error").toast({ delay: 3000 });
@@ -95,7 +100,7 @@
 
         $(document).ready(function () {
             $('select').select2();
-            $('.confirmation').on('click', function(e){delete_object(this);});
+            $('.btn-delete').on('click', function(e){delete_document(this);});
 
             {% block ready_js %}
             {% endblock %}

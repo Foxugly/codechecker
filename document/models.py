@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
-from tools.generic_class import GenericClass
 from django.urls import reverse
-import inspect
+
+from tools.generic_class import GenericClass
 
 
 class Document(GenericClass):
@@ -41,5 +41,12 @@ class Document(GenericClass):
             out += '<a class="btn btn-sm btn-success ml-1" href="{0}"><i class="fas fa-download"></i></a>'.format(
                 self.get_download_url())
         if "delete" in buttons:
-            out += '<a class="btn btn-sm btn-danger confirmation ml-1" data-url="{0}" href="#" data-name="{1}"><i class="far fa-trash-alt"></i></a>'.format(self.get_delete_popup_url(), self.name)
+            out += '<a class="btn btn-sm btn-danger btn-delete confirmation ml-1" data-source="table" data-url="{0}" href="#" data-name="{1}"><i class="far fa-trash-alt"></i></a>'.format(
+                self.get_delete_popup_url(), self.name)
+        return out
+
+    def get_button_download_delete(self):
+        out = '<a class="ml-3" href="{0}">{1}</a>'.format(self.get_download_url(), self.name)
+        out += '<a class ="ml-1 btn btn-outline-danger btn-sm btn-delete confirmation" href="#" data-source="span" data-url="{0}" data-name="{1}"><i class="fa fa-times"></i></a>'.format(
+            self.get_delete_popup_url(), self.name)
         return out

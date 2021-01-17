@@ -14,7 +14,6 @@ from document.models import Document
 from language.models import Extension
 from django.conf import settings
 import os
-import inspect
 
 
 class QuestionPopupCreateView(LoginRequiredMixin, BSModalCreateView):
@@ -95,8 +94,8 @@ class QuestionDetailView(LoginRequiredMixin, GenericDetailView):
         context['course'] = self.object.refer_chapter.refer_course
         answer = Answer.objects.get(refer_question=self.object, user=self.request.user)
         context["answer"] = answer
-        if len(answer.code.all()):
-            context['mode'] = answer.code.all()[0].extension.mode
+        if len(answer.codes.all()):
+            context['mode'] = answer.codes.all()[0].extension.mode
         context['documentForm'] = DocumentForm()
         return context
 
@@ -114,7 +113,7 @@ class QuestionDocumentUploadView(LoginRequiredMixin, BSModalReadView):
         type_doc = self.request.GET.get("type")
         title = _("Add code files") if type_doc == "code" else _("Add documents")
         action_url = "{0}?type={1}".format(reverse('question:upload_document', kwargs={'pk': self.object.id}), type_doc)
-        context.update({'title': title, 'action_url': action_url})
+        context.update({'title': title, 'action_url': action_url, "source":"question"})
         return context
 
 

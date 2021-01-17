@@ -4,7 +4,7 @@ from answer.models import Answer
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    filter_horizontal = ('code',)
+    filter_horizontal = ('codes', 'docs')
 
 
 admin.site.register(Answer, AnswerAdmin)

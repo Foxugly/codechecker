@@ -28,18 +28,23 @@ $("#dropzoneForm").dropzone({
     success: function (file, response) {
         console.log("Success");
         console.log(response);
-        if (response['type'] == "doc"){
-            var html = '<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>';
-            $("#table_documents tbody").append(html);
-            $("#table_documents tbody tr:last .confirmation").on('click', function(e){delete_object(this);});
+        {% if source == "question" %}
+            if (response['type'] == "doc"){
+                var html = '<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>';
+                $("#table_documents tbody").append(html);
+                $("#table_documents tbody tr:last .confirmation").on('click', function(e){delete_document(this);});
 
-        }
-        if (response['type'] == "code"){
-            var html = '<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>';
-            $("#table_codes tbody").append(html);
-            $("#table_codes tbody tr:last .confirmation").on('click', function(e){delete_object(this);});
-        }
-
+            }
+            if (response['type'] == "code"){
+                var html = '<tr><td>'+ response['filename'] +'</td><td style="width:1px; white-space:nowrap;text-align:right;">' + response['buttons'] + '</td></tr>';
+                $("#table_codes tbody").append(html);
+                $("#table_codes tbody tr:last .confirmation").on('click', function(e){delete_document(this);});
+            }
+        {% endif %}
+        {% if source == "answer" %}
+            $("#div_docs").append("<span>" + response['buttons'] + "</span>");
+            $("#div_docs a:last.btn-delete").on('click', function(e){delete_document(this);});
+        {% endif %}
     }
 });
 </script>

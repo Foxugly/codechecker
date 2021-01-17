@@ -22,13 +22,36 @@
             <h2 class="text-center">{{object.name}}</h2>
         </div>
     </div>
-    <div class="row">
-        <div class="my-3 col-12" style="border:solid 1px;">{{answer.refer_question.question | safe}}</div>
+    <div class="px-3 py-3" style="border:solid 1px;">
+        <div class="row">
+            <div class="col-12" >{{answer.refer_question.question | safe }}</div>
+        </div>
+        {% if answer.refer_question.documents.all %}
+            <div class="row">
+                <div class="col-12">
+                    {% for doc in answer.refer_question.documents.all %}
+                        <a class="mr-2" href="{{ doc.get_download_url }}">{{ doc }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </div>
+    {% if answer.refer_question.can_add_documents %}
+        <div class="row mt-2">
+            <div id="div_docs" class="col-12">
+                <a href="#" class="btn btn-secondary btn-modal" data-url="{% url 'answer:document_popup_add' object.id  %}">{% trans "Add document" %}</a>
+                {% for doc in answer.docs.all %}
+                    <span>
+                        {{ doc.get_button_download_delete | safe }}
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
     <div class="row">
         <div class="col-12">
             <ul id="tabs" class="nav nav-tabs ">
-                {% for code in answer.code.all %}
+                {% for code in answer.codes.all %}
                 <li class="nav-item">
                     {% if forloop.first %}
                     <a data-id="{{code.id}}" class="nav-link tab active" aria-current="page" href="#">{{code}}</a>
@@ -37,7 +60,7 @@
                     {% endif %}
                 </li>
                 {% endfor %}
-                {% if answer.refer_question.can_add_files %}
+                {% if answer.refer_question.can_add_code %}
                 <li id="tab_add" class="nav-item">
                     <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#add_file">+</a>
                 </li>
@@ -100,6 +123,10 @@
 
     {% block ready_js %}
 
+        $( ".btn-modal" ).each(function() {
+            $( this ).modalForm({ formURL: $( this ).data("url") });
+        });
+
         $('#tree').treeview({
         data: {{treeview}},
         expandIcon: 'fas fa-plus',
@@ -116,9 +143,6 @@
         window.location = node.href;
         }
         });
-
-
-
 
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
             mode: {name: "python", // TODO multimode use {{mode}}
@@ -259,8 +283,6 @@
                 this.parentNode.parentNode.scrollTop = this.parentNode.parentNode.scrollHeight;
             }
         });
-
-        
 
         $("#btn_run").click(run_execute);
         $("#btn_add_file").click(function(e){
