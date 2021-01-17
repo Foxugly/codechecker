@@ -27,7 +27,7 @@ class Answer(GenericClass):
         out = ""
         if len(self.codes.all()):
             if indice <= len(self.codes.all()):
-                with open(self.code.all()[indice].path, "r") as f:
+                with open(self.codes.all()[indice].path, "r") as f:
                     out = f.read()
         return out
 

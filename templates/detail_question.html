@@ -29,8 +29,9 @@
         {% if answer.refer_question.documents.all %}
             <div class="row">
                 <div class="col-12">
+                    <b>{% trans "Attachment(s)"%}</b> :
                     {% for doc in answer.refer_question.documents.all %}
-                        <a class="mr-2" href="{{ doc.get_download_url }}">{{ doc }}</a>
+                        <a class="ml-1" href="{{ doc.get_download_url }}">{{ doc }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -48,7 +49,7 @@
             </div>
         </div>
     {% endif %}
-    <div class="row">
+    <div class="row row mt-2">
         <div class="col-12">
             <ul id="tabs" class="nav nav-tabs ">
                 {% for code in answer.codes.all %}

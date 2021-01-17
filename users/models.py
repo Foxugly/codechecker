@@ -92,7 +92,7 @@ class User(AbstractBaseUser):
                     shutil.copy(code.path, answer_path)
                     doc = Document(name=code.name, path=answer_path, has_default=True, extension=code.extension)
                     doc.save()
-                    answer.code.add(doc)
+                    answer.codes.add(doc)
                 question.answers.add(answer)
 
     def has_module_perms(self, *args, **kwargs):
