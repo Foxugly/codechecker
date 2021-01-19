@@ -2,11 +2,12 @@ import json
 import os
 import subprocess
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from answer.models import Answer
 from document.models import Document
 from language.models import Extension
+from question.models import QuestionTests
 
 
 def get_content(request, document_id):
@@ -111,11 +112,18 @@ def add_file(request, answer_id):
 
 def execute_anwser(request, answer_id):
     if request.is_ajax():
-        anwser = Answer.objects.get(id=answer_id)
-        output = subprocess.check_output(["python3", os.path.join(anwser.path, "code.py")])
+        answer = Answer.objects.get(id=answer_id)
+        output = subprocess.check_output(
+            ["python3", os.path.join(answer.path, "code.py")])
         res = {
             "command": "python3 code.py",
             "output": output.decode("utf-8")
         }
         return HttpResponse(json.dumps(res))
 
+
+def run_tests(request, answer_id):
+    if request.is_ajax():
+        answer = Answer.objects.get(id=answer_id)
+        tests = QuestionTests.objects.get(refer_question=answer.refer_question)
+        return HttpResponse(json.dumps(tests.run_tests(answer)))

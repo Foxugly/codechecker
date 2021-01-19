@@ -1,5 +1,7 @@
 Django==3.1.4
 fontawesome-free==5.15.1
 django-crispy-forms==1.10.0
+wheel
 django-tinymce
 django-bootstrap-modal-forms
+pytest

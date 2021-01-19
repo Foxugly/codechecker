@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from answer.models import Answer
 from document.forms import DocumentForm
 from question.forms import QuestionCreateForm, QuestionUpdateForm, QuestionPopupCreateForm
-from question.models import Question
+from question.models import Question, QuestionTests
 from tools.generic_views import *
 from chapter.models import Chapter
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalReadView
@@ -30,7 +30,8 @@ class QuestionPopupCreateView(LoginRequiredMixin, BSModalCreateView):
 
     def form_valid(self, form):
         if not self.request.is_ajax():
-            form.instance.refer_chapter = Chapter.objects.get(id=self.refer_chapter)
+            form.instance.refer_chapter = Chapter.objects.get(
+                id=self.refer_chapter)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -92,11 +93,14 @@ class QuestionDetailView(LoginRequiredMixin, GenericDetailView):
         context = super(GenericDetailView, self).get_context_data(**kwargs)
         context['treeview'] = self.object.refer_chapter.refer_course.get_json()
         context['course'] = self.object.refer_chapter.refer_course
-        answer = Answer.objects.get(refer_question=self.object, user=self.request.user)
+        answer = Answer.objects.get(
+            refer_question=self.object, user=self.request.user)
         context["answer"] = answer
         if len(answer.codes.all()):
             context['mode'] = answer.codes.all()[0].extension.mode
         context['documentForm'] = DocumentForm()
+        context['tests'] = QuestionTests.objects.get(
+            refer_question=self.object)
         return context
 
 
@@ -111,9 +115,12 @@ class QuestionDocumentUploadView(LoginRequiredMixin, BSModalReadView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         type_doc = self.request.GET.get("type")
-        title = _("Add code files") if type_doc == "code" else _("Add documents")
-        action_url = "{0}?type={1}".format(reverse('question:upload_document', kwargs={'pk': self.object.id}), type_doc)
-        context.update({'title': title, 'action_url': action_url, "source":"question"})
+        title = _("Add code files") if type_doc == "code" else _(
+            "Add documents")
+        action_url = "{0}?type={1}".format(
+            reverse('question:upload_document', kwargs={'pk': self.object.id}), type_doc)
+        context.update(
+            {'title': title, 'action_url': action_url, "source": "question"})
         return context
 
 

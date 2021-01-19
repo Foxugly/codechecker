@@ -32,7 +32,7 @@
             <tbody>
                 {% for inst in object.chapters.all %}
                     <tr>
-                        <td>{{inst}}</td>
+                        <td><a href="{{inst.get_absolute_url}}">{{inst}}</a></td>
                         <td class="py-1" style="width:1px; white-space:nowrap;">
                             <a role="button" class="btn btn-primary" href="{{inst.get_absolute_url}}"><i class="far fa-eye"></i></a>
                             <a role="button" class="btn btn-info" href="{{inst.get_change_url}}"><i class="fas fa-edit"></i></a>

@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from django.conf import settings
 from django.db import models
@@ -17,14 +18,17 @@ class Question(GenericClass):
     doc_buttons = ['add', 'detail', 'download', 'delete']
     code_buttons = ['add', 'detail', 'download', 'delete']
     answers_buttons = ['detail']
-    refer_chapter = models.ForeignKey("chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
+    refer_chapter = models.ForeignKey(
+        "chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
     slug = models.SlugField()
     name = models.CharField(_("Title"), max_length=255)
     question = HTMLField(_("Question"), default="")
-    documents = models.ManyToManyField(Document, blank=True, verbose_name=_("documents"), related_name='documents',)
+    documents = models.ManyToManyField(
+        Document, blank=True, verbose_name=_("documents"), related_name='documents',)
     default_code = models.ManyToManyField(Document, blank=True, verbose_name=_("default_code"),
                                           related_name='default_code')
-    answers = models.ManyToManyField(Answer, blank=True, verbose_name=_("answers"))
+    answers = models.ManyToManyField(
+        Answer, blank=True, verbose_name=_("answers"))
     languages = models.ManyToManyField(Language, blank=True)
     can_add_documents = models.BooleanField(default=False)
     can_add_code = models.BooleanField(default=False)
@@ -81,3 +85,66 @@ class Question(GenericClass):
 
     def get_data_answers(self):
         return [(str(self), d.get_buttons(self.answers_buttons)) for d in self.answers.all()]
+
+
+class QuestionTests(models.Model):
+    refer_question = models.ForeignKey(
+        "question.Question", on_delete=models.CASCADE)
+    path = models.FilePathField(
+        path=settings.MEDIA_DIR, recursive=True, allow_folders=False, allow_files=True)
+    command_execute = models.CharField(max_length=256, blank=False)
+    command_list = models.CharField(max_length=256, blank=False)
+
+    def __str__(self):
+        return "Tests for " + str(self.refer_question)
+
+    def get_test_names(self):
+        cmd = (self.command_list + " " +
+               os.path.join(settings.BASE_DIR, self.path)).split()
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, _err = process.communicate()
+        return self.parse_pytest_list(output.decode("utf-8"))
+
+    def run_tests(self, answer):
+        cmd = (self.command_execute + " " + os.path.join(
+            settings.BASE_DIR, self.path)).split()
+        process = subprocess.Popen(cmd, cwd=str(
+            answer.path), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, _err = process.communicate()
+        # TODO: gérer les erreurs de syntaxe.
+        return self.parse_pytest_output(out.decode("utf-8"))
+
+    def parse_pytest_output(self, std_out):
+        res = []
+        for line in std_out.split("\n"):
+            print(line)
+            if "FAILED" in line or "PASSED" in line:
+                data = line.split("::")[1][:-7]
+                name, result = data.split()
+                success = result == "PASSED"
+                res.append(TestResult(name, success).to_json())
+            if line.startswith("===========") and "FAILURES" in line:
+                break
+        return res
+
+    def parse_pytest_list(self, output):
+        res = []
+        for line in output.split("\n"):
+            line = line.strip()
+            if line.startswith("<Function "):
+                # Each line looks like <Function name_of_the_function>
+                res.append(TestResult(line[10:-1], False))
+        return res
+
+
+class TestResult:
+    def __init__(self, name, success):
+        self.name = name
+        self.success = success
+
+    def __str__(self):
+        return self.name + ": " + "OK" if self.success else "KO"
+
+    def to_json(self):
+        return self.__dict__
