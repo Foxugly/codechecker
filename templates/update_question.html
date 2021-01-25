@@ -114,6 +114,39 @@
                 <a href="#" id="#btn_add_default_code" class="btn btn-secondary btn-sm btn-modal" data-url="{% url 'question:document_popup_add' object.id  %}?type=code">Add code</a>
             </div>
         </div>
+        <!-- criteria -->
+        <div class="form-group form-horizontal row">
+            <label class="col-md-3 form-check-label">Criteria</label>
+            <div class="col-md-9">
+                <table id="table_criterias" style="border: 1px solid #aaa;margin-bottom: 4px;" class="table table-striped table-sm">
+                    <thead>
+                        <tr><th class="pl-3">Name</th><th>max points</th><th>step</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for name, detail, max_points, step, buttons in criterias %}
+                            <tr>
+                                <td>{{ name }}{{detail}}</td>
+                                <td>{{ max_points }}</td>
+                                <td>{{ step }}</td>
+                                <td style="width:1px; white-space:nowrap;text-align:right;">{{ buttons | safe }}</td>
+                            </tr>
+                            {% empty %}
+                                <tr><td colspan="4">No objects</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="#" id="#btn_add_criteria" class="btn btn-secondary btn-sm btn-modal" data-url="{% url 'question:criteria_popup_add' object.id  %}">Add criteria</a>
+            </div>
+        </div>
+        <!-- allow_pair_evaluation -->
+        <div class="form-group form-horizontal row">
+            <label for="{{ form.allow_pair_evaluation.id_for_label }}" class="col-md-3 form-check-label{% if form.allow_pair_evaluation.field.required %} requiredField{% endif %}">
+                        {{ form.allow_pair_evaluation.label|safe }}{% if form.allow_pair_evaluation.field.required %}<span class="asteriskField">*</span>{% endif %}
+                    </label>
+            <div class="col-md-9">
+                    {% crispy_field form.can_add_code %}
+            </div>
+        </div>
         <!-- answers -->
         <div class="form-group form-horizontal row">
             <label class="col-md-3 form-check-label">Answers</label>
@@ -142,10 +175,4 @@
         </div>
     </form>
 </div>
-{% endblock %}
-
-{% block ready_js %}
-$( ".btn-modal" ).each(function() {
-    $( this ).modalForm({ formURL: $( this ).data("url") });
-});
 {% endblock %}

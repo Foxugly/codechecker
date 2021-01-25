@@ -21,6 +21,7 @@ class DocumentForm(ModelForm):
 
 class DocumentPopupCreateForm(BSModalModelForm):
     content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 10}))
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['class'] = "form-control"

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'question',
     'answer',
     'document',
+    'evaluation',
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

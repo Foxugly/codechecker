@@ -11,27 +11,28 @@ from document.models import Document
 from language.models import Language
 from tools.generic_class import GenericClass
 from tinymce.models import HTMLField
+from evaluation.models import Criteria, Evaluation
 
 
-# Create your models here.
 class Question(GenericClass):
     doc_buttons = ['add', 'detail', 'download', 'delete']
     code_buttons = ['add', 'detail', 'download', 'delete']
     answers_buttons = ['detail']
-    refer_chapter = models.ForeignKey(
-        "chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
+    criterias_buttons = ['change', 'delete']
+    refer_chapter = models.ForeignKey("chapter.Chapter", on_delete=models.CASCADE, verbose_name=_("chapter"))
     slug = models.SlugField()
     name = models.CharField(_("Title"), max_length=255)
     question = HTMLField(_("Question"), default="")
-    documents = models.ManyToManyField(
-        Document, blank=True, verbose_name=_("documents"), related_name='documents',)
-    default_code = models.ManyToManyField(Document, blank=True, verbose_name=_("default_code"),
-                                          related_name='default_code')
-    answers = models.ManyToManyField(
-        Answer, blank=True, verbose_name=_("answers"))
+    documents = models.ManyToManyField(Document, blank=True, verbose_name=_("documents"), related_name='documents',)
+    default_code = models.ManyToManyField(Document, blank=True, verbose_name=_("default_code"), related_name='default_code')
+    answers = models.ManyToManyField(Answer, blank=True, verbose_name=_("answers"))
     languages = models.ManyToManyField(Language, blank=True)
     can_add_documents = models.BooleanField(default=False)
     can_add_code = models.BooleanField(default=False)
+    criterias = models.ManyToManyField(Criteria, blank=True,)
+    evaluations = models.ForeignKey(Evaluation, related_name="evaluations", blank=True, null=True, on_delete=models.CASCADE)
+    pair_evaluations = models.ManyToManyField(Evaluation, blank=True, verbose_name=_("evaluation by pair"), related_name='pair_evaluation')
+    allow_pair_evaluation = models.BooleanField(_("Allow pair evaluation"), default=False)
 
     def __str__(self):
         return self.name
@@ -84,7 +85,10 @@ class Question(GenericClass):
         return [(d.name, d.get_buttons(self.code_buttons)) for d in self.default_code.all()]
 
     def get_data_answers(self):
-        return [(str(self), d.get_buttons(self.answers_buttons)) for d in self.answers.all()]
+        return [(a.user, a.get_buttons(self.answers_buttons)) for a in self.answers.all()]
+
+    def get_data_criterias(self):
+        return [(c.name, c.detail, c.max_points, c.step, c.get_buttons(self.criterias_buttons)) for c in self.criterias.all()]
 
 
 class QuestionTests(models.Model):

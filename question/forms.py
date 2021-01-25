@@ -20,7 +20,7 @@ class QuestionUpdateForm(ModelForm):
 
     class Meta:
         model = Question
-        fields = ['name', 'question', 'can_add_documents', 'languages', 'can_add_code', 'answers']
+        fields = ['name', 'question', 'can_add_documents', 'languages', 'can_add_code', 'allow_pair_evaluation', 'answers']
 
 
 class QuestionCreateForm(ModelForm):

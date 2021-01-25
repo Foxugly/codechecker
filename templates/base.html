@@ -56,7 +56,6 @@
     <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous"></script>
     <script>
-
         function delete_document(e){
             var url = $(e).data('url');
             var name = "object";
@@ -98,10 +97,36 @@
             }); // end bootbox.confirm
         }
 
-        $(document).ready(function () {
-            $('select').select2();
-            $('.btn-delete').on('click', function(e){delete_document(this);});
+        function run_modal(e){
+            var url = $(e).data('url');
+            $.ajax({
+                url: url,
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type: 'POST',
+                traditional: true,
+                dataType: 'json',
+                success: function(result){
+                    console.log(result);
+                    console.log(result["form"]);
+                    $('#modal2_body').html(result["form"]);
+                    $('#modal_btn_submit').text(result["button_label"]);
+                    $('#modal_btn_submit').addClass(result["button_css"]);
+                    $('#modal_btn_submit').attr("data-target", result["target"]);
+                    $('#modal_btn_title').text(result["title"]);
+                    $("#modal2").modal("show");
+                },
+                error: function(){
+                    console.log("ERROR");
+                }
+            });
+        }
 
+        $(document).ready(function () {
+            $("select").select2();
+            $(".btn-delete").on('click', function(e){delete_document(this);});
+            $(".btn-modal").each(function() {
+                $( this ).modalForm({ formURL: $( this ).data("url") });
+            });
             {% block ready_js %}
             {% endblock %}
         }); // end document

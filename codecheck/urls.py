@@ -35,6 +35,7 @@ urlpatterns = [
     path('question/', include('question.urls', namespace='question')),
     path('chapter/', include('chapter.urls', namespace='chapter')),
     path('course/', include('course.urls', namespace='course')),
+    path('evaluation/', include('evaluation.urls', namespace='evaluation')),
     path('document/', include('document.urls', namespace='document')),
     path('users/', include('users.urls', namespace='users')),
     path('accounts/login/', UserLoginView.as_view(), name='login'),

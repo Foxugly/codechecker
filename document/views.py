@@ -9,18 +9,6 @@ from django.http import HttpResponse
 import json
 
 
-class DocumentPopupCreateView(LoginRequiredMixin, BSModalCreateView):
-    model = Document
-    fields = None
-    form_class = DocumentPopupCreateForm
-    template_name = 'modal_form.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({'title': _("Add qqch")})
-        return context
-
-
 class DocumentCreateView(LoginRequiredMixin, GenericCreateView):
     model = Document
     fields = None

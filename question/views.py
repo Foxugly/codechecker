@@ -35,8 +35,9 @@ class QuestionPopupCreateView(LoginRequiredMixin, BSModalCreateView):
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = _("Add Question")
+        context = super().get_context_data()
+        context['title'] = _("Create question")
+        context['btn_label'] = _("Create")
         return context
 
     def get_success_url(self):
@@ -75,6 +76,7 @@ class QuestionUpdateView(LoginRequiredMixin, GenericUpdateView):
         context["documents"] = self.object.get_data_docs()
         context["codes"] = self.object.get_data_codes()
         context["answers"] = self.object.get_data_answers()
+        context["criterias"] = self.object.get_data_criterias()
         return context
 
 
@@ -108,7 +110,7 @@ class QuestionDeleteView(LoginRequiredMixin, GenericDeleteView):
     model = Question
 
 
-class QuestionDocumentUploadView(LoginRequiredMixin, BSModalReadView):
+class DocumentUploadView(LoginRequiredMixin, BSModalReadView):
     model = Question
     template_name = 'modal_upload.html'
 
