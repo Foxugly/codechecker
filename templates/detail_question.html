@@ -16,149 +16,138 @@
 {% endblock %}
 
 {% block content %}
-<div class="container col-12 row">
-    <div class="col-9 mx-4"> 
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-center">{{object.name}}</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+                <div class="text-center">
+                    <h2 class="text-center">{{object.name}}</h2>
             </div>
-        </div>
-        <div class="px-3 py-3" style="border:solid 1px;">
-            <div class="row">
-                <div class="col-12" >{{answer.refer_question.question | safe }}</div>
+            <div class="px-3 py-3" style="border:solid 1px;">
+                <div>{{answer.refer_question.question | safe }}</div>
+                {% if answer.refer_question.documents.all %}
+                    <b>{% trans "Attachment(s)"%}</b> :
+                    {% for doc in answer.refer_question.documents.all %}
+                        <a class="ml-1" href="{{ doc.get_download_url }}">{{ doc }}</a>
+                    {% endfor %}
+                {% endif %}
             </div>
-            {% if answer.refer_question.documents.all %}
-                <div class="row">
-                    <div class="col-12">
-                        <b>{% trans "Attachment(s)"%}</b> :
-                        {% for doc in answer.refer_question.documents.all %}
-                            <a class="ml-1" href="{{ doc.get_download_url }}">{{ doc }}</a>
+            {% if answer.refer_question.can_add_documents %}
+                <div class="row mt-2">
+                    <div id="div_docs" class="col-md-12">
+                        <a href="#" class="btn btn-secondary btn-modal" data-url="{% url 'answer:document_popup_add' object.id  %}">{% trans "Add document" %}</a>
+                        {% for doc in answer.docs.all %}
+                            <span>
+                                {{ doc.get_button_download_delete | safe }}
+                            </span>
                         {% endfor %}
                     </div>
                 </div>
             {% endif %}
-        </div>
-        {% if answer.refer_question.can_add_documents %}
             <div class="row mt-2">
-                <div id="div_docs" class="col-12">
-                    <a href="#" class="btn btn-secondary btn-modal" data-url="{% url 'answer:document_popup_add' object.id  %}">{% trans "Add document" %}</a>
-                    {% for doc in answer.docs.all %}
-                        <span>
-                            {{ doc.get_button_download_delete | safe }}
-                        </span>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-        <div class="row row mt-2">
-            <div class="col-12">
-                <ul id="tabs" class="nav nav-tabs ">
-                    {% for code in answer.codes.all %}
-                    <li class="nav-item">
-                        {% if forloop.first %}
-                        <a data-id="{{code.id}}" class="nav-link tab active" aria-current="page" href="#">{{code}}</a>
-                        {% else %}
-                        <a data-id="{{code.id}}" class="nav-link tab" aria-current="page" href="#">{{code}}</a>
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                    {% if answer.refer_question.can_add_code %}
-                    <li id="tab_add" class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#add_file">+</a>
-                    </li>
-                    {% endif %}
-                </ul>
-                <textarea id="code" data-status="unchanged">{{answer.get_code_content}}</textarea>
-            </div>
-        </div>
-        <div class="row d-flex clearfix mt-3">
-            <div class="align-self-start mr-auto">
-                <button id="btn_save" class="btn btn-success">Save</button>
-                <button id="btn_run" class="btn btn-outline-dark" style="">
-                    Run
-                    <i class="fa fa-play" style="color: green"></i>
-                </button>
-            </div>
-            <div class="align-self-center mx-auto">
-            </div>
-            <div class="align-self-end ml-auto">
-                <button id="btn_reload" class="btn btn-secondary ml-auto">Reload default code</button>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="terminal col-12" id="terminal">
-                <div id="terminal_history">
-                </div>
-                <div class="line">
-                    <span id="path">{{user.netid}}@codechecker:~$</span>
-                    <input type="text" id="terminal_input">
-                </div>
-            </div>
-        </div>
-        <div id="add_file" class="modal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add file</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="form_add_document" class="form-row d-flex justify-content-center align-items-start mb-3">
-                            <div class="col-md-7">{{documentForm.name}}
-                                <div id="validation_id_name" class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-md-1 text-center">.</div>
-                            <div class="col-md-4">{{documentForm.extension}}
-                                <div id="validation_id_extension" class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button id="btn_add_file" type="button" class="btn btn-primary">Add</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-2 mr-2"> 
-        <div class="row mb-1">
-            <button id="btn_test" class="btn btn-outline-dark" style="">
-                        Run tests
-                <i class="fa fa-list"></i>
-            </button>
-        </div>
-        <div class="row">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                    <th>Name</th>
-                    <th class="text-center">Status</th>
-                    </tr>
-                </thead>
-                <tbody id="tests_table">
-                    {% for test_result in tests.get_test_names %}
-                    <tr>
-                        <td>{{test_result.name}}</td>
-                        <td class="text-center" id="{{test_result.name}}">{% if test_result.success %}
-                                <i class="fa fa-check-circle" aria-hidden="true" style="color: green;"></i>
+                <div class="{% if tests.get_test_names %}col-md-10{%else%}col-md-12{% endif%}">
+                    <ul id="tabs" class="nav nav-tabs ">
+                        {% for code in answer.codes.all %}
+                        <li class="nav-item">
+                            {% if forloop.first %}
+                            <a data-id="{{code.id}}" class="nav-link tab active" aria-current="page" href="#">{{code}}</a>
                             {% else %}
-                                {% comment %} <i class="fa fa-exclamation-circle" style="color: red;"></i> {% endcomment %}
-                            {% endif %}                        
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td>No tests</td>
-                        <td></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <a data-id="{{code.id}}" class="nav-link tab" aria-current="page" href="#">{{code}}</a>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                        {% if answer.refer_question.can_add_code %}
+                        <li id="tab_add" class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#add_file">+</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <textarea id="code" data-status="unchanged">{{answer.get_code_content}}</textarea>
+                </div>
+                {% if tests.get_test_names %}
+                <div class="col-md-2">
+                    <button id="btn_test" class="btn btn-outline-dark mb-2">Run tests <i class="fa fa-list"></i></button>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tests_table">
+                            {% for test_result in tests.get_test_names %}
+                            <tr>
+                                <td>{{test_result.name}}</td>
+                                <td class="text-center" id="{{test_result.name}}">{% if test_result.success %}
+                                        <i class="fa fa-check-circle" aria-hidden="true" style="color: green;"></i>
+                                    {% else %}
+                                        {% comment %} <i class="fa fa-exclamation-circle" style="color: red;"></i> {% endcomment %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td>No tests</td>
+                                <td></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+            <div class="row d-flex clearfix mt-3 px-3">
+                <div class="align-self-start mr-auto">
+                    <button id="btn_save" class="btn btn-success">Save</button>
+                    <button id="btn_run" class="btn btn-outline-dark" style="">
+                        Run
+                        <i class="fa fa-play" style="color: green"></i>
+                    </button>
+                </div>
+                <div class="align-self-center mx-auto">
+                </div>
+                <div class="align-self-end">
+                    <button id="btn_reload" class="btn btn-secondary">Reload default code</button>
+                </div>
+            </div>
+            <div class="row mt-3 px-3">
+                <div class="terminal col-md-12" id="terminal">
+                    <div id="terminal_history">
+                    </div>
+                    <div class="line">
+                        <span id="path">{{user.netid}}@codechecker:~$</span>
+                        <input type="text" id="terminal_input">
+                    </div>
+                </div>
+            </div>
+            <div id="add_file" class="modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add file</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="form_add_document" class="form-row d-flex justify-content-center align-items-start mb-3">
+                                <div class="col-md-7">{{documentForm.name}}
+                                    <div id="validation_id_name" class="invalid-feedback"></div>
+                                </div>
+                                <div class="col-md-1 text-center">.</div>
+                                <div class="col-md-4">{{documentForm.extension}}
+                                    <div id="validation_id_extension" class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button id="btn_add_file" type="button" class="btn btn-primary">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
+    {% endblock %}
 
     {% block ready_js %}
 

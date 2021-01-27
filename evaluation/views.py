@@ -45,7 +45,7 @@ class CriteriaCreateView(LoginRequiredMixin, BSModalCreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = _("Add criteria")
-        context['btn_label'] = _("Update")
+        context['btn_label'] = _("Add")
         return context
 
     def get_success_url(self):

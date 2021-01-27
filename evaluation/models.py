@@ -8,11 +8,17 @@ from django.core.exceptions import ValidationError
 
 
 class Criteria(GenericClass):
+    STEPS_CHOICES = (
+        (0.25, "0,25"),
+        (0.5, "0,5"),
+        (1, "1"),
+    )
+
     refer_question = models.ForeignKey("question.Question", verbose_name="refer_question", blank=True, on_delete=models.CASCADE)
     name = models.CharField(_("Criteria"), max_length=255)
     detail = models.TextField(blank=True, null=True)
     max_points = models.DecimalField(default=4, decimal_places=2, max_digits=4)
-    step = models.DecimalField(default=1, decimal_places=2, max_digits=4)
+    step = models.DecimalField(_("Step"), default=1, decimal_places=2, max_digits=4, choices=STEPS_CHOICES)
 
     def save(self, *args, **kwargs):
         super(GenericClass, self).save(*args, **kwargs)

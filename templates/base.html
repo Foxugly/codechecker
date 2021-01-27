@@ -18,12 +18,11 @@
     </head>
     <body>
         {% include "nav.html" %}
-        {% block breadcrumbs %}{% endblock %}
+        <div class="container-fluid">{% block breadcrumbs %}{% endblock %}</div>
         {% include "_modal.html" %}
         <main>
-
-                {% block content %}<div class="container-fluid">base</div>{% endblock content %}
-
+            {% block content %}<div class="container-fluid">base</div>{% endblock content %}
+            {% include "_footer.html" %}
         </main>
 
     <div aria-live="polite" aria-atomic="true" class="position-relative">
@@ -95,30 +94,6 @@
                     }
                 }
             }); // end bootbox.confirm
-        }
-
-        function run_modal(e){
-            var url = $(e).data('url');
-            $.ajax({
-                url: url,
-                headers: { "X-CSRFToken": getCookie("csrftoken") },
-                type: 'POST',
-                traditional: true,
-                dataType: 'json',
-                success: function(result){
-                    console.log(result);
-                    console.log(result["form"]);
-                    $('#modal2_body').html(result["form"]);
-                    $('#modal_btn_submit').text(result["button_label"]);
-                    $('#modal_btn_submit').addClass(result["button_css"]);
-                    $('#modal_btn_submit').attr("data-target", result["target"]);
-                    $('#modal_btn_title').text(result["title"]);
-                    $("#modal2").modal("show");
-                },
-                error: function(){
-                    console.log("ERROR");
-                }
-            });
         }
 
         $(document).ready(function () {
